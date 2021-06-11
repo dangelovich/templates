@@ -5,55 +5,81 @@ Template for basic python scripting purposes
 """
 
 import logging
-import yaml
 import pprint
+import sys
+import argparse
+import time
+import yaml
+
 
 def setuplogging(arguments):
     """ Set up logging for the script """
     logging.getLogger("requests").setLevel(logging.ERROR)
+    FORMAT="%(levelname)s:%(funcName)s:%(message)s"
+    LEVEL=logging.NOTSET
     if arguments.debug:
-        logging.basicConfig(level=logging.DEBUG)
+        LEVEL=logging.DEBUG
     if arguments.verbose:
-        logging.basicConfig(level=logging.INFO)
+        LEVEL=logging.INFO
+    logging.basicConfig(level=LEVEL, format=FORMAT)
 
 
-def doArgs(argList, name):
+def process_arguments(argument_list, name):
     """ Process arguments passed in """
     parser = argparse.ArgumentParser(description=name)
 
-    parser.add_argument('-v', "--verbose", action="store_true", help="Enable verbose mode", default=False)
-    parser.add_argument('-d', "--debug", action="store_true", help="Enable debug mode", default=False)
-    parser.add_argument('-c', '--config', action="store", dest="config", type=str, help="Input file name", required=True)
-    parser.add_argument('--output', action="store", dest="outputFn", type=str, help="Output file name", required=True)
+    parser.add_argument('-v', "--verbose",
+                         action="store_true",
+                         help="Enable verbose mode",
+                         default=False)
+    parser.add_argument('-d', "--debug",
+                         action="store_true",
+                         help="Enable debug mode",
+                         default=False)
+    parser.add_argument('-c', '--config',
+                        action="store",
+                        dest="config",
+                        type=str,
+                        help="Config file",
+                        required=False,
+                        default="config.yaml")
 
-    return parser.parse_args(argList)
+    return parser.parse_args(argument_list)
+
+
+def getconfig(configfile):
+    """ Open the supplied configuration file and import its contents as yaml """
+    try:
+        with open(configfile, "r") as ymlfile:
+            config = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+            logging.debug("Config file contents:\n%s", pprint.pformat(config))
+            logging.info("Config file loaded successfully")
+        ymlfile.close()
+    except IOError as configioexception:
+        logging.error("Error readon from config file: %s.\n Error: %s",
+                        configfile, configioexception)
+        sys.exit()
+    return config
 
 
 def main():
-    progName = "Template"
-    args = doArgs(sys.argv[1:], progName)
+    """ Main function """
+    # Update the variable below to the app name
+    script_name = "Template"
+    args = process_arguments(sys.argv[1:], script_name)
 
-    verbose = args.verbose
-    inputFn = args.inputFn
-    outputFn = args.outputFn
+    setuplogging(args)
 
-    print "Starting %s" % (progName)
-    startTime = float(time.time())
+    logging.debug("Starting %s", script_name)
+    script_start_time = float(time.time_ns())
 
-    if not os.path.isfile(inputFn):
-        print "Input doesn't exist, exiting"
-        return
+    config = getconfig(args.config)
 
-    outputBase = os.path.dirname(outputFn)
-    if outputBase!='' and not os.path.exists(outputBase):
-        print "Output directory doesn't exist, making output dirs: %s" % (outputBase)
-        os.makedirs(outputBase)
+    # App starts here
+    print("Hello, world!")
 
-
-    print "Finished in %0.4f seconds" % (time.time() - startTime)
-    return
+    logging.debug("Finished in %f seconds", ((time.time_ns() - script_start_time)/1000000000))
 
 
 if __name__ == '__main__':
-    #sys.argv = ["programName.py","--input","test.txt","--output","tmp/test.txt"]
     main()

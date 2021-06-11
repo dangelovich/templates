@@ -1,0 +1,9 @@
+---
+# Each item here is read in as a variable
+setting1: "This is a setting"
+setting2:
+  - "list item 1"
+  - "list item 2"
+setting3:
+  1: "dict value 1"
+  2: "dict value 2"

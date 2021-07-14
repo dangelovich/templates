@@ -16,7 +16,7 @@ def setuplogging(arguments):
     """ Set up logging for the script """
     logging.getLogger("requests").setLevel(logging.ERROR)
     FORMAT="%(levelname)s:%(funcName)s:%(message)s"
-    LEVEL=logging.NOTSET
+    LEVEL=logging.ERROR
     if arguments.debug:
         LEVEL=logging.DEBUG
     if arguments.verbose:

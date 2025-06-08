@@ -56,7 +56,7 @@ def getconfig(configfile):
             logging.info("Config file loaded successfully")
         ymlfile.close()
     except IOError as configioexception:
-        logging.error("Error readon from config file: %s.\n Error: %s",
+        logging.error("Error reading from config file: %s.\n Error: %s",
                         configfile, configioexception)
         sys.exit()
     return config
